@@ -4,32 +4,35 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.api.Implamantation.EncoderDecoderImpl;
+import bgu.spl.net.impl.echo.LineMessageEncoderDecoder;
 
 import java.util.HashMap;
 
-public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<T> {
+public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<String> {
     private boolean shouldTerminate;
-    private Connections<T> connections;
+    private Connections<String> connections;
     private int connectionId;
-    private MessageEncoderDecoder<T> encoderDecoder;
+    private MessageEncoderDecoder<String> encoderDecoder;
 
     public BidiMessagingProtocolImpl(){
         shouldTerminate=false;
         connections=new ConnectionsImpl<>();
-        encoderDecoder=new EncoderDecoderImpl<>();
+        encoderDecoder=new EncoderDecoderImpl();
     }
 
-    public  void start(int connectionId, Connections<T> connections){
+    public  void start(int connectionId, Connections<String> connections){
         this.connectionId=connectionId;
         this.connections=connections;
     }
 
-    public void process(T message){
+    public void process(String message){
         if(message!=null){
             byte[] msg=encoderDecoder.encode(message);
             short opCode=bytesToShort(msg);
             switch (opCode){
-                case
+                case 1:{}
+                case 2:{}
+                case 3:{}
             }
 
         }
