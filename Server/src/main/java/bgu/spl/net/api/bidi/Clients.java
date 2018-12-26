@@ -4,20 +4,32 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Clients {
-    private Map<Integer,Client> clientMap;//combine the client with his connection id
+    private Map<String,Client> clientMap;
+    private Map<Integer,String> loggedClients;
 
     public Clients(){clientMap=new ConcurrentHashMap<>();
+    loggedClients=new ConcurrentHashMap<>();
     }
 
-    public Map<Integer, Client> getClientMap() {
+    public Map<String, Client> getClientMap() {
         return clientMap;
     }
 
-    public void addClient(Client c,int conId){
-        clientMap.put(conId,c);
+    public void addClient(Client c){
+        clientMap.put(c.getUsername(),c);
     }
-    public  void removeClient(Integer connectionId){
-        clientMap.remove(connectionId);
+    public  void removeClient(String username){
+        clientMap.remove(username);
     }
 
+    public void logInClient(String name,int conId){
+        loggedClients.put(conId,name);
+    }
+    public void logOutClient(int conId){
+        loggedClients.remove(conId);
+    }
+
+    public Map<Integer, String> getLoggedClients() {
+        return loggedClients;
+    }
 }

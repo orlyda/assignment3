@@ -65,9 +65,10 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if(!clients.getClientMap().isEmpty()) {
             connections.send(connectionId, "103");
             connections.disconnect(connectionId);
-            clients.removeClient(connectionId);
+            clients.logOutClient(connectionId);
         }
         else connections.send(connectionId,"113");
+
 
     }
 
@@ -75,29 +76,29 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         String username=msg.substring(1,msg.indexOf("\0")-1);
         String password=msg.substring(msg.indexOf("\0")+1,msg.length()-2);
         Client c=new Client(username,password);
-        clients.getClientMap().forEach();
-        if(clients.getClientMap().) {//the user is already registered
+        if(clients.getClientMap().containsKey(username)) {//the user is already registered
             connections.send(connectionId,"111");
         }
         else {//register the new client
             connections.send(connectionId, "101");
-            clients.addClient(c,connectionId);
+            clients.addClient(c);
         }
 
     }
     private void  logIn(String msg){
         String username=msg.substring(1,msg.indexOf("\0")-1);
         String password=msg.substring(msg.indexOf("\0")+1,msg.length()-2);
-        if(!clients.getClientMap().containsKey(username)||clients.getClientMap().get(username).isLoggedin()||
+        if(!clients.getClientMap().containsKey(username)||clients.getLoggedClients().containsValue(username)||
                 !clients.getClientMap().get(username).getUsername().equals(password))
             //it means the user already logged on, or the user doesn't exist, or the password don't match
             connections.send(connectionId,"112");
         else { //log in the client
-            clients.getClientMap().get(username).setLoggedin(true);
+            clients.logInClient(username,connectionId);
             connections.send(connectionId, "102");
         }
     }
     private void follow(String msg){
+        String m=msg.
 
     }
 }

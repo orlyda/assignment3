@@ -8,7 +8,6 @@ public class Client {
     private int numPosts;
     private int numFollowers;
     private int numFollowing;
-    private boolean loggedin;
     private HashSet<String> following;
     private HashSet<String> followers;
 
@@ -18,19 +17,10 @@ public class Client {
         numPosts=0;
         numFollowers=0;
         numFollowing=0;
-        loggedin=false;
-    }
-
-    public void setLoggedin(boolean loggedin) {
-        this.loggedin = loggedin;
     }
 
     public String getUsername() {
         return username;
-    }
-
-    public boolean isLoggedin() {
-        return loggedin;
     }
 
     public int getNumFollowers() {
