@@ -2,22 +2,26 @@ package bgu.spl.net.api.Implamantation;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
+import bgu.spl.net.api.bidi.Client;
+import bgu.spl.net.api.bidi.Clients;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.api.Implamantation.EncoderDecoderImpl;
 import bgu.spl.net.impl.echo.LineMessageEncoderDecoder;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<String> {
     private boolean shouldTerminate;
     private Connections<String> connections;
     private int connectionId;
-    private MessageEncoderDecoder<String> encoderDecoder;
+    private Clients clients;
 
     public BidiMessagingProtocolImpl(){
         shouldTerminate=false;
         connections=new ConnectionsImpl<>();
-        encoderDecoder=new EncoderDecoderImpl();
+
     }
 
     public  void start(int connectionId, Connections<String> connections){
@@ -27,15 +31,17 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     public void process(String message){
         if(message!=null){
-            byte[] msg=encoderDecoder.encode(message);
-            short opCode=bytesToShort(msg);
+            short opCode=bytesToShort(message.getBytes());
             switch (opCode){
-                case 1:{}
-                case 2:{}
-                case 3:{}
+                case 1:{register(message);}
+                case 2:{logIn(message);}
+                case 3:{disconnect();}
             }
 
         }
+    }
+    public void addClients(Clients c){
+        clients=c;
     }
     public byte[] shortToBytes(short num)
     {
@@ -53,5 +59,45 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     public boolean shouldTerminate(){
         return shouldTerminate;
+    }
+
+    private void disconnect(){
+        if(!clients.getClientMap().isEmpty()) {
+            connections.send(connectionId, "103");
+            connections.disconnect(connectionId);
+            clients.removeClient(connectionId);
+        }
+        else connections.send(connectionId,"113");
+
+    }
+
+    private void register(String msg){
+        String username=msg.substring(1,msg.indexOf("\0")-1);
+        String password=msg.substring(msg.indexOf("\0")+1,msg.length()-2);
+        Client c=new Client(username,password);
+        clients.getClientMap().forEach();
+        if(clients.getClientMap().) {//the user is already registered
+            connections.send(connectionId,"111");
+        }
+        else {//register the new client
+            connections.send(connectionId, "101");
+            clients.addClient(c,connectionId);
+        }
+
+    }
+    private void  logIn(String msg){
+        String username=msg.substring(1,msg.indexOf("\0")-1);
+        String password=msg.substring(msg.indexOf("\0")+1,msg.length()-2);
+        if(!clients.getClientMap().containsKey(username)||clients.getClientMap().get(username).isLoggedin()||
+                !clients.getClientMap().get(username).getUsername().equals(password))
+            //it means the user already logged on, or the user doesn't exist, or the password don't match
+            connections.send(connectionId,"112");
+        else { //log in the client
+            clients.getClientMap().get(username).setLoggedin(true);
+            connections.send(connectionId, "102");
+        }
+    }
+    private void follow(String msg){
+
     }
 }

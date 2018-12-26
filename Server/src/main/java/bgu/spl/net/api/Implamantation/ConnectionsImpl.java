@@ -1,5 +1,6 @@
 package bgu.spl.net.api.Implamantation;
 
+import bgu.spl.net.api.bidi.Client;
 import bgu.spl.net.api.bidi.ConnectionHandler;
 import bgu.spl.net.api.bidi.Connections;
 
@@ -10,11 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionsImpl<T> implements Connections<T> {
     private Map<Integer,ConnectionHandler> connectionHandlerMap;
 
+
     public ConnectionsImpl(){
         connectionHandlerMap=new ConcurrentHashMap<>();
-    }
-    public void addConnection(int connectionId, ConnectionHandler connectionHandler){
-        connectionHandlerMap.put(connectionId,connectionHandler);
     }
 
     public boolean send(int connectionId, T msg){
