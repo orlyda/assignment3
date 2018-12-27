@@ -1,25 +1,22 @@
 package bgu.spl.net.api.bidi;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Clients {
     private Map<String,Client> clientMap;
     private Map<Integer,String> loggedClients;
+    private LinkedList<String> username;//the users in registration order
 
-    public Clients(){clientMap=new ConcurrentHashMap<>();
-    loggedClients=new ConcurrentHashMap<>();
+    public Clients(){
+        clientMap=new ConcurrentHashMap<>();
+        loggedClients=new ConcurrentHashMap<>();
+        username=new LinkedList<>();
     }
 
     public Map<String, Client> getClientMap() {
         return clientMap;
-    }
-
-    public void addClient(Client c){
-        clientMap.put(c.getUsername(),c);
-    }
-    public  void removeClient(String username){
-        clientMap.remove(username);
     }
 
     public void logInClient(String name,int conId){
@@ -31,5 +28,13 @@ public class Clients {
 
     public Map<Integer, String> getLoggedClients() {
         return loggedClients;
+    }
+    public void register(Client c){
+        clientMap.put(c.getUsername(),c);
+        username.addLast(c.getUsername());
+    }
+
+    public LinkedList<String> getUsername() {
+        return username;
     }
 }
