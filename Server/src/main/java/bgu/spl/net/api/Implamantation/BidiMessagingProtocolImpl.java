@@ -5,9 +5,6 @@ import bgu.spl.net.api.bidi.Client;
 import bgu.spl.net.api.bidi.Clients;
 import bgu.spl.net.api.bidi.Connections;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 
 public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<String> {
     private boolean shouldTerminate;
@@ -72,8 +69,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void register(String msg){
-        String username=msg.substring(1,msg.indexOf("0")-1);
-        String password=msg.substring(msg.indexOf("0")+1,msg.length()-2);
+        String username=msg.substring(1,msg.indexOf("\0"));
+        String password=msg.substring(msg.indexOf("\0")+1,msg.length()-1);
         Client c=new Client(username,password);
         if(clients.getClientMap().containsKey(username)) {//the user is already registered
             connections.send(connectionId,"111");
@@ -85,8 +82,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     }
     private void  logIn(String msg){
-        String username=msg.substring(1,msg.indexOf("0")-1);
-        String password=msg.substring(msg.indexOf("0")+1,msg.length()-2);
+        String username=msg.substring(1,msg.indexOf("\0"));
+        String password=msg.substring(msg.indexOf("\0")+1,msg.length()-1);
         if(!clients.getClientMap().containsKey(username)||clients.getLoggedClients().containsValue(username)||
                 !clients.getClientMap().get(username).getUsername().equals(password))
             //it means the user already logged on, or the user doesn't exist, or the password don't match
@@ -103,12 +100,12 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         int i=0;
         String usernames="";//create the list of the succeeded following usernames
         boolean succsess=false;
-        if (!checkUserLoogedIn(4)){
+        if (!checkUserLoggedIn(4)){
             return;
         }
         while(i<msg.length()-2 &&(msg.charAt(i)<'0'||msg.charAt(i)>'9') ){i++;}
         String user=clients.getLoggedClients().get(connectionId);
-        String s=msg.substring(i,msg.length()-3);
+        String s=msg.substring(i,msg.length()-1);
         String[]m=s.split("\0");
         int count=0;//count the amount of succeeded follows
         if(msg.charAt(1)=='0'){//the client want to follow the list of people
@@ -145,8 +142,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void post(String msg) {
-        if (!checkUserLoogedIn(5)) {
-            msg = msg.substring(1, msg.length() - 2);
+        if (!checkUserLoggedIn(5)) {
+            msg = msg.substring(1, msg.length() - 1);
             String username = clients.getLoggedClients().get(connectionId);
             for (String s : clients.getClientMap().get(username).getFollowers()) {//post the msg to all the followers
                 clients.getClientMap().get(s).addMessage(username, msg);//add the message to follower list;
@@ -165,10 +162,10 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void pm(String msg){
-        if (!checkUserLoogedIn(6)) {
+        if (!checkUserLoggedIn(6)) {
             String sender = clients.getLoggedClients().get(connectionId);
             String receiver = msg.substring(1, msg.indexOf("\0"));
-            msg = msg.substring(receiver.length() + 2, msg.length() - 3);//the message content
+            msg = msg.substring(receiver.length() + 2, msg.length() - 1);//the message content
             clients.getClientMap().get(receiver).addMessage(sender, msg);
             connections.send(connectionId, "106");
             sendNotification("51"+sender+"\0"+msg,receiver);
@@ -176,7 +173,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void userlist(){
-        if (checkUserLoogedIn(7)) {
+        if (checkUserLoggedIn(7)) {
             String usernames = "107";
             for (String s : clients.getUsername()) usernames += s + "\0";
             connections.send(connectionId, usernames);
@@ -184,9 +181,9 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void stat(String msg){
-        if(checkUserLoogedIn(8))
+        if(checkUserLoggedIn(8))
             return;
-        String username=msg.substring(1,msg.length()-3);
+        String username=msg.substring(1);
         if(!clients.getClientMap().containsKey(username)) {
             connections.send(connectionId, "118");
             return;
@@ -198,7 +195,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     }
 
-    private boolean checkUserLoogedIn(int opKey){
+    private boolean checkUserLoggedIn(int opKey){
         if (!clients.getLoggedClients().containsKey(connectionId)) {//the client is not logged in
             connections.send(connectionId, "11"+String.valueOf(opKey));
             return false;
@@ -206,7 +203,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         return true;
     }
     private void sendNotification(String msg,String username){
-        if (clients.getLoggedClients().containsKey(username)){
+        if (clients.getLoggedClients().containsValue(username)){
             connections.send(connectionId,msg);
         }
         else {
