@@ -18,17 +18,20 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     public BidiMessagingProtocolImpl(){
         shouldTerminate=false;
         connections=new ConnectionsImpl<>();
-
+        this.clients = new Clients();
     }
 
     public  void start(int connectionId, Connections<String> connections){
         this.connectionId=connectionId;
         this.connections=connections;
+
     }
 
     public void process(String message){
         if(message!=null){
             short opCode=bytesToShort(message.getBytes());
+            message = message.substring(2);
+            System.out.println(message);
             switch (opCode){
                 case 1:register(message);
                 case 2:logIn(message);
@@ -69,8 +72,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void register(String msg){
-        String username=msg.substring(1,msg.indexOf("\0")-1);
-        String password=msg.substring(msg.indexOf("\0")+1,msg.length()-2);
+        String username=msg.substring(1,msg.indexOf("0")-1);
+        String password=msg.substring(msg.indexOf("0")+1,msg.length()-2);
         Client c=new Client(username,password);
         if(clients.getClientMap().containsKey(username)) {//the user is already registered
             connections.send(connectionId,"111");
@@ -82,8 +85,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     }
     private void  logIn(String msg){
-        String username=msg.substring(1,msg.indexOf("\0")-1);
-        String password=msg.substring(msg.indexOf("\0")+1,msg.length()-2);
+        String username=msg.substring(1,msg.indexOf("0")-1);
+        String password=msg.substring(msg.indexOf("0")+1,msg.length()-2);
         if(!clients.getClientMap().containsKey(username)||clients.getLoggedClients().containsValue(username)||
                 !clients.getClientMap().get(username).getUsername().equals(password))
             //it means the user already logged on, or the user doesn't exist, or the password don't match

@@ -8,6 +8,7 @@ public class EncoderDecoderImpl implements MessageEncoderDecoder<String> {
     private int len=0;
     public  String decodeNextByte(byte nextByte){
         //if()
+        return null;
     }
 
 
