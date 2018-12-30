@@ -21,7 +21,6 @@ public class Client {
         following=new HashSet<>();
         followers=new HashSet<>();
         messages=new ConcurrentHashMap<>();
-
     }
 
     public String getUsername() {

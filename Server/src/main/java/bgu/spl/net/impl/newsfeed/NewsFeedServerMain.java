@@ -12,12 +12,11 @@ public class NewsFeedServerMain {
 
     public static void main(String[] args) {
         NewsFeed feed = new NewsFeed(); //one shared object
-        Connections connections = new ConnectionsImpl();
 // you can use any server...
         Server.threadPerClient(
                 7777, //port
-                () -> new BidiMessagingProtocolImpl<>(), //protocol factory
-                LineMessageEncoderDecoder::new //message encoder decoder factory
+                       () ->  new RemoteCommandInvocationProtocol<>(feed), //protocol factory
+                     ObjectEncoderDecoder::new //message encoder decoder factory
         ).serve();
 
    //     Server.reactor(
