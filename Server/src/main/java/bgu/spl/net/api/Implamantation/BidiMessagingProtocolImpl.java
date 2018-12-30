@@ -15,7 +15,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     public BidiMessagingProtocolImpl(){
         shouldTerminate=false;
         connections=new ConnectionsImpl<>();
-        this.clients = new Clients();
+        this.clients = Clients.getInstance();
     }
 
     public  void start(int connectionId, Connections<String> connections){
@@ -39,11 +39,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
                 case 7:userlist();
                 case 8:stat(message);
             }
-
         }
-    }
-    public void addClients(Clients c){
-        clients=c;
     }
 
     private short bytesToShort(byte[] byteArr)
@@ -64,8 +60,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             clients.logOutClient(connectionId);
         }
         else connections.send(connectionId,"113");
-
-
     }
 
     private void register(String msg){
@@ -79,8 +73,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             connections.send(connectionId, "101");
             clients.register(c);
         }
-
     }
+
     private void  logIn(String msg){
         String username=msg.substring(1,msg.indexOf("\0"));
         String password=msg.substring(msg.indexOf("\0")+1,msg.length()-1);
@@ -96,6 +90,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             }
         }
     }
+
     private void follow(String msg){
         int i=0;
         String usernames="";//create the list of the succeeded following usernames
@@ -138,7 +133,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         else {//the FOLLOW command succeeded for at least one user
             connections.send(connectionId,"104"+String.valueOf(count)+usernames);
         }
-
     }
 
     private void post(String msg) {
