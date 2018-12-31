@@ -20,6 +20,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
         if(!connectionHandlerMap.containsKey(connectionId))
             return false;
         ConnectionHandler c=connectionHandlerMap.get(connectionId);
+        System.out.println("GOT HERE");
         c.send(msg);
         return true;
     }

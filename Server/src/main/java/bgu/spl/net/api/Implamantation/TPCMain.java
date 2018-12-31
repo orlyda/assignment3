@@ -14,7 +14,7 @@ public class TPCMain {
             Server.threadPerClient(
                     7777, //port
                     BidiMessagingProtocolImpl::new, //protocol factory
-                    LineMessageEncoderDecoder::new //message encoder decoder factory
+                    EncoderDecoderImpl::new //message encoder decoder factory
             ).serve();
 
 

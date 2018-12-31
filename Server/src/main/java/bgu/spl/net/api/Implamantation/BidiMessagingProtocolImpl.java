@@ -107,6 +107,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)1));
             reply +=opcode;
+            System.out.println(reply);
             connections.send(connectionId, reply);
             clients.register(c);
         }
@@ -121,6 +122,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String reply = new String(shortToBytes((short) 11));
             String opcode = new String(shortToBytes((short)2));
             reply +=opcode;
+            System.out.println(reply);
             connections.send(connectionId, reply);
         }
         else { //log in the client
