@@ -64,26 +64,42 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
 }
  
 bool ConnectionHandler::getLine(std::string& line) {
-    return getFrameAscii(line, '\n');
+    return getFrameAscii(line, '\0');
 }
 
 bool ConnectionHandler::sendLine(std::string& line) {
-    return sendFrameAscii(line, '\n');
+    return sendFrameAscii(line, '\0');
 }
  
 bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
     char ch;
+    int charCounter = 0, delimiterCounter =2,charCounterMax = 4;
+    char* ca = new char[2];
     // Stop when we encounter the null character. 
     // Notice that the null character is not appended to the frame string.
     try {
 		do{
 			getBytes(&ch, 1);
             frame.append(1, ch);
-        }while (delimiter != ch);
-    } catch (std::exception& e) {
+            if(charCounter<2)
+                ca[charCounter]=ch;
+            charCounter++;
+            if(charCounter==2){
+                if(bytesToShort(ca)==9)
+                    delimiterCounter=2;
+                else if(bytesToShort(ca)==10)
+                    delimiterCounter=1;
+                else if(bytesToShort(ca)==11)
+                    delimiterCounter=0;
+            }
+            if(charCounter>2 && frame.at(charCounter)==delimiter)
+                delimiterCounter--;
+        }while (delimiterCounter > 0|| charCounterMax<4);
+    }catch (std::exception& e) {
         std::cerr << "recv failed (2Error: " << e.what() << ')' << std::endl;
         return false;
     }
+    delete [] ca;
     return true;
 }
  
@@ -100,4 +116,10 @@ void ConnectionHandler::close() {
     } catch (...) {
         std::cout << "closing failed: connection already closed" << std::endl;
     }
+}
+short ConnectionHandler::bytesToShort(char* bytesArr)
+    {
+        short result = (short)((bytesArr[0] & 0xff) << 8);
+        result += (short)(bytesArr[1] & 0xff);
+        return result;
 }
