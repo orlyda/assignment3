@@ -21,6 +21,7 @@ public class Client {
         following=new HashSet<>();
         followers=new HashSet<>();
         messages=new ConcurrentHashMap<>();
+
     }
 
     public String getUsername() {
@@ -59,6 +60,8 @@ public class Client {
         messages.put(username,msg);
     }
     public void addWAitMessage(String msg){
+        if(waitingMessage == null)
+            waitingMessage = new LinkedList<>();
         waitingMessage.addLast(msg);
     }
     public LinkedList getAwaitMessages(){return waitingMessage;}

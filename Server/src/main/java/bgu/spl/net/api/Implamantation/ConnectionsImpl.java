@@ -6,14 +6,23 @@ import bgu.spl.net.api.bidi.Connections;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ConnectionsImpl<T> implements Connections<T> {
     private Map<Integer,ConnectionHandler> connectionHandlerMap;
-
+    private AtomicInteger ID = new AtomicInteger();
 
     public ConnectionsImpl(){
         connectionHandlerMap=new ConcurrentHashMap<>();
+        ID.set(1);
+    }
+
+
+    public int addConnection(ConnectionHandler connectionHandler) {
+        int id = ID.getAndIncrement();
+        connectionHandlerMap.putIfAbsent(id, connectionHandler);
+        return id;
     }
 
     public boolean send(int connectionId, T msg){

@@ -25,7 +25,7 @@ bool ConnectionHandler::connect() {
 			throw boost::system::system_error(error);
     }
     catch (std::exception& e) {
-        std::cerr << "Connection failed (4Error: " << e.what() << ')' << std::endl;
+        std::cerr << "Connection failed (Error: " << e.what() << ')' << std::endl;
         return false;
     }
     return true;
@@ -41,7 +41,7 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
 		if(error)
 			throw boost::system::system_error(error);
     } catch (std::exception& e) {
-        std::cerr << "recv failed (3Error: " << e.what() << ')' << std::endl;
+        std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
     }
     return true;
@@ -57,7 +57,7 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
 		if(error)
 			throw boost::system::system_error(error);
     } catch (std::exception& e) {
-        std::cerr << "recv failed (1Error: " << e.what() << ')' << std::endl;
+        std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
     }
     return true;
@@ -79,6 +79,7 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
     // Notice that the null character is not appended to the frame string.
     try {
 		do{
+            std::cout<<"HELLO WORLD"<<std::endl;
 			getBytes(&ch, 1);
             frame.append(1, ch);
             if(charCounter<2)
@@ -92,11 +93,11 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
                 else if(bytesToShort(ca)==11)
                     delimiterCounter=0;
             }
-            if(charCounter>2 && frame.at(charCounter)==delimiter)
+            if(charCounter>2 && frame[charCounter]==delimiter&&bytesToShort(ca)<11)
                 delimiterCounter--;
         }while (delimiterCounter > 0|| charCounterMax<4);
     }catch (std::exception& e) {
-        std::cerr << "recv failed (2Error: " << e.what() << ')' << std::endl;
+        std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
     }
     delete [] ca;

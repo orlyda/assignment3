@@ -35,7 +35,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
-                    send(nextMessage);
+                    protocol.process(nextMessage);
                 }
             }
             close();
@@ -52,10 +52,22 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         sock.close();
     }
 
+    public BidiMessagingProtocol<T> getProtocol() {
+        return protocol;
+    }
+
     @Override
     public void send(T msg) {
-        protocol.process(msg);
-
+        try {
+            out.write(encdec.encode(msg));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

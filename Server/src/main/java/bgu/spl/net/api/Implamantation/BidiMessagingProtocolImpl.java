@@ -18,23 +18,19 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     public BidiMessagingProtocolImpl(){
         shouldTerminate=false;
-        connections=new ConnectionsImpl<>();
         this.clients = Clients.getInstance();
     }
 
     public  void start(int connectionId, Connections<String> connections){
         this.connectionId=connectionId;
         this.connections=connections;
-
     }
 
     public void process(String message){
         if(message!=null){
             String OPcode = message.substring(0,2);
             short opCode=bytesToShort(OPcode.getBytes());
-            System.out.println(opCode);
             message = message.substring(2);
-            System.out.println(message);
             switch (opCode){
                 case 1:{register(message);
                     break;}
@@ -107,7 +103,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)1));
             reply +=opcode;
-            System.out.println(reply);
             connections.send(connectionId, reply);
             clients.register(c);
         }
@@ -122,7 +117,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String reply = new String(shortToBytes((short) 11));
             String opcode = new String(shortToBytes((short)2));
             reply +=opcode;
-            System.out.println(reply);
             connections.send(connectionId, reply);
         }
         else { //log in the client
