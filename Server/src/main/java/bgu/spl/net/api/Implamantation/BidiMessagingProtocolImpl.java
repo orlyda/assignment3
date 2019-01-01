@@ -30,7 +30,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if(message!=null){
             String OPcode = message.substring(0,2);
             short opCode=bytesToShort(OPcode.getBytes());
-            message = message.substring(2);
+            if(opCode!=3 & opCode!=7)
+                message = message.substring(2);
             switch (opCode){
                 case 1:{register(message);
                     break;}
@@ -194,7 +195,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
                 names[i] = names[i].substring(0, names[i].indexOf(" "));
                 clients.getClientMap().get(names[i]).addMessage(username, msg);
                 String Message ;
-
                 sendNotification(toSend+username+'\0'+msg,names[i]);
             }
             String reply = new String(shortToBytes((short) 10));
@@ -255,7 +255,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     private boolean checkUserLoggedIn(short opKey){
         if (!clients.getLoggedClients().containsKey(connectionId)) {//the client is not logged in
             String reply = new String(shortToBytes((short) 11));
-            connections.send(connectionId, reply);
             connections.send(connectionId, reply+new String(shortToBytes((opKey))));
             return false;
         }
