@@ -30,6 +30,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if(message!=null){
             String OPcode = message.substring(0,2);
             short opCode=bytesToShort(OPcode.getBytes());
+            System.out.println(opCode);
             if(opCode!=3 & opCode!=7)
                 message = message.substring(2);
             switch (opCode){
@@ -72,24 +73,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         return shouldTerminate;
     }
 
-    private void logOut(){
-
-        if(!clients.getClientMap().isEmpty()) {
-            String reply = new String(shortToBytes((short) 10));
-            String opcode = new String(shortToBytes((short)3));
-            reply +=opcode;
-            clients.logOutClient(connectionId);
-            connections.send(connectionId, reply);
-            connections.disconnect(connectionId);
-        }
-        else{
-            String reply = new String(shortToBytes((short) 11));
-            String opcode = new String(shortToBytes((short)3));
-            reply +=opcode;
-            connections.send(connectionId, reply);
-        }
-    }
-
     private void register(String msg){
         String username=msg.substring(1,msg.indexOf(String.valueOf('\0')));
         String password=msg.substring(msg.indexOf(String.valueOf('\0'))+1,msg.length()-1);
@@ -129,6 +112,24 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             for (String s : (Iterable<String>) clients.getClientMap().get(username).getAwaitMessages()) {
                 connections.send(connectionId, s);
             }
+        }
+    }
+
+    private void logOut(){
+
+        if(!clients.getClientMap().isEmpty()) {
+            String reply = new String(shortToBytes((short) 10));
+            String opcode = new String(shortToBytes((short)3));
+            reply +=opcode;
+            clients.logOutClient(connectionId);
+            connections.send(connectionId, reply);
+            connections.disconnect(connectionId);
+        }
+        else{
+            String reply = new String(shortToBytes((short) 11));
+            String opcode = new String(shortToBytes((short)3));
+            reply +=opcode;
+            connections.send(connectionId, reply);
         }
     }
 
