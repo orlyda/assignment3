@@ -78,9 +78,9 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)3));
             reply +=opcode;
+            clients.logOutClient(connectionId);
             connections.send(connectionId, reply);
             connections.disconnect(connectionId);
-            clients.logOutClient(connectionId);
         }
         else{
             String reply = new String(shortToBytes((short) 11));
@@ -101,18 +101,18 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             connections.send(connectionId, reply);
         }
         else {//register the new client
+            clients.register(c);
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)1));
             reply +=opcode;
             connections.send(connectionId, reply);
-            clients.register(c);
         }
     }
 
     private void  logIn(String msg){
         String username=msg.substring(1,msg.indexOf(String.valueOf('\0')));
         String password=msg.substring(msg.indexOf(String.valueOf('\0'))+1,msg.length()-1);
-        if(!clients.getClientMap().containsKey(username)||clients.getLoggedClients().containsValue(username)||
+        if(!clients.getClientMap().containsKey(username)||!clients.getLoggedClients().containsValue(username)||
                 !clients.getClientMap().get(username).getUsername().equals(password)) {
             //it means the user already logged on, or the user doesn't exist, or the password don't match
             String reply = new String(shortToBytes((short) 11));

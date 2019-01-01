@@ -94,7 +94,7 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
             }
             if(charCounter>2 && frame[charCounter]==delimiter&&bytesToShort(ca)<11)
                 delimiterCounter--;
-        }while (delimiterCounter > 0|| charCounterMax<4);
+        }while (delimiterCounter > 0 || charCounterMax<4);
     }catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
