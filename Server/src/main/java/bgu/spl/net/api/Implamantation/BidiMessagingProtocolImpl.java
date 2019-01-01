@@ -33,6 +33,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             System.out.println(opCode);
             if(opCode!=3 & opCode!=7)
                 message = message.substring(2);
+
             switch (opCode){
                 case 1:{register(message);
                     break;}
@@ -116,14 +117,15 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void logOut(){
-
-        if(!clients.getClientMap().isEmpty()) {
+        System.out.println(999);
+        if(!clients.getLoggedClients().isEmpty()) {
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)3));
             reply +=opcode;
             clients.logOutClient(connectionId);
             connections.send(connectionId, reply);
             connections.disconnect(connectionId);
+            shouldTerminate=true;
         }
         else{
             String reply = new String(shortToBytes((short) 11));
