@@ -6,7 +6,9 @@ import bgu.spl.net.api.bidi.Clients;
 import bgu.spl.net.api.bidi.Connections;
 
 import javax.management.StringValueExp;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 
@@ -30,10 +32,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if(message!=null){
             String OPcode = message.substring(0,2);
             short opCode=bytesToShort(OPcode.getBytes());
-            System.out.println(opCode);
             if(opCode!=3 & opCode!=7)
                 message = message.substring(2);
-
             switch (opCode){
                 case 1:{register(message);
                     break;}
@@ -75,8 +75,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void register(String msg){
-        String username=msg.substring(1,msg.indexOf(String.valueOf('\0')));
-        String password=msg.substring(msg.indexOf(String.valueOf('\0'))+1,msg.length()-1);
+        String username=msg.substring(0,msg.indexOf(String.valueOf('\0')));
+        String password=msg.substring(msg.indexOf(String.valueOf('\0'))+1);
         Client c=new Client(username,password);
         if(clients.getClientMap().containsKey(username)) {//the user is already registered
             String reply = new String(shortToBytes((short) 11));
@@ -94,10 +94,10 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void  logIn(String msg){
-        String username=msg.substring(1,msg.indexOf(String.valueOf('\0')));
-        String password=msg.substring(msg.indexOf(String.valueOf('\0'))+1,msg.length()-1);
-        if(!clients.getClientMap().containsKey(username)||!clients.getLoggedClients().containsValue(username)||
-                !clients.getClientMap().get(username).getUsername().equals(password)) {
+        String username=msg.substring(0,msg.indexOf(String.valueOf('\0')));
+        String password=msg.substring(msg.indexOf(String.valueOf('\0'))+1);
+        if(!clients.getClientMap().containsKey(username)||clients.getLoggedClients().containsValue(username)||
+                !clients.getClientMap().get(username).getPassword().equals(password)) {
             //it means the user already logged on, or the user doesn't exist, or the password don't match
             String reply = new String(shortToBytes((short) 11));
             String opcode = new String(shortToBytes((short)2));
@@ -135,22 +135,20 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void follow(String msg){
-        int i=0;
         String usernames="";//create the list of the succeeded following usernames
         boolean succsess=false;
         if (!checkUserLoggedIn((short) 4)){ return; }
-        while(i<msg.length()-2 &&(msg.charAt(i)<'0'||msg.charAt(i)>'9') ){i++;}
         String user=clients.getLoggedClients().get(connectionId);
-        String s=msg.substring(i,msg.length()-1);
+        String s=msg.substring(3);
+        System.out.println(msg);
         String[]m=s.split(String.valueOf('\0'));
-        int count=0;//count the amount of succeeded follows
-        if(msg.charAt(1)=='0'){//the client want to follow the list of people
+        System.out.println(Arrays.toString(m));
+        if(msg.charAt(0)=='0'){//the client want to follow the list of people
             for (String aM : m) {
                 if (!clients.getClientMap().get(user).getFollowing().contains(aM)) {//the following user isn't already in the following list
                     succsess = true;
                     clients.getClientMap().get(user).addFollowing(aM);//add the followed user to following list
                     clients.getClientMap().get(aM).addFollower(user);//add our client to the followers list at the followed client
-                    count++;
                     usernames+="aM"+'\0';
                 }
             }
@@ -161,7 +159,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
                     succsess = true;
                     clients.getClientMap().get(user).removeFollowing(aM);//add the followed user to following list
                     clients.getClientMap().get(aM).removeFollower(user);//add our client to the followers list at the followed client
-                    count++;
                     usernames+="aM"+'\0';
                 }
             }
@@ -203,7 +200,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String opcode = new String(shortToBytes((short)5));
             reply +=opcode;
             connections.send(connectionId, reply);
-
         }
     }
 

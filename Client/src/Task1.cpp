@@ -86,29 +86,20 @@
                 std::string line("");
                 line.push_back(ca[0]);line.push_back(ca[1]);
                 delete [] ca;
-                if(message.find("0")==6) line.push_back(0 & 0xFF);
-                else line.push_back(1 & 0xFF);
+                if(message.find('0')==7) line.push_back('0');
+                else line.push_back('1');
                 message = message.substr(9);
                 size_t space = message.find(" ");
                 std::string numOfusers = message.substr(0,space);
+                int num = atoi(numOfusers.c_str());
                 char* users = new char[space];
-                switch(space){
-                    case 1:{
-                        short x = (short)message[0]-48;
-                        shortToBytes(x,users);
-                    }
-                    case 2:{
-                        short x = 10*((short)message[0]-48)+((short)message[1]);
-                        shortToBytes(x,users);
-                    }
-                }
+                shortToBytes(((short)num),users);
                 line.push_back(users[0]);line.push_back(users[1]);
                 delete [] users;
-                string userslist = message.substr(space+1);
+                string userslist = message.substr(space+numOfusers.size());
                 for(unsigned int i = 0;i<userslist.size();i++)
-                    if(userslist[i]==' ')
-                        userslist[i]='\0';
-                line+= numOfusers+userslist;
+                    if(userslist[i]==' ') userslist[i]='\0';
+                line+= userslist;
                 line.push_back('\0');
                 return line;
             }

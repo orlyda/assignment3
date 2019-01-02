@@ -1,6 +1,8 @@
 package bgu.spl.net.api.Implamantation;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
 import java.nio.charset.*;
 import java.util.Arrays;
 
@@ -32,7 +34,7 @@ public class EncoderDecoderImpl implements MessageEncoderDecoder<String> {
             else if((opcode==1||opcode==2||opcode==6)&&count==3){
                 return popString();
             }
-            else if(opcode == 4&delimiterCount==count)
+            else if(opcode == 4&delimiterCount==count&len>5)
                 return popString();
         }
         return null; //not a line yet
@@ -56,9 +58,9 @@ public class EncoderDecoderImpl implements MessageEncoderDecoder<String> {
         }
         if(len<2)
             opCode[len]=nextByte;
-        if(opcode==4 & (len ==4|len==5)){
-            numOfUsers[len]=nextByte;
-            if(len == 5)
+        if(opcode==4 & (len ==3|len==4)){
+            numOfUsers[len-3]=nextByte;
+            if(len == 4)
                 delimiterCount += bytesToShort(numOfUsers);
         }
         bytes[len++] = nextByte;

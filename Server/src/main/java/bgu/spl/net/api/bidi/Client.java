@@ -15,18 +15,20 @@ public class Client {
     private LinkedList<String> waitingMessage;
 
     public Client(String user,String pass){
+        System.out.println(user);
         username=user;
         password=pass;
         numPosts=0;
         following=new HashSet<>();
         followers=new HashSet<>();
         messages=new ConcurrentHashMap<>();
-
+        waitingMessage = new LinkedList<>();
     }
 
     public String getUsername() {
         return username;
     }
+    public String getPassword(){return  password;}
 
     public int getNumPosts() {
         return numPosts;
@@ -60,8 +62,6 @@ public class Client {
         messages.put(username,msg);
     }
     public void addWAitMessage(String msg){
-        if(waitingMessage == null)
-            waitingMessage = new LinkedList<>();
         waitingMessage.addLast(msg);
     }
     public LinkedList getAwaitMessages(){return waitingMessage;}

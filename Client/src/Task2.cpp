@@ -60,7 +60,6 @@
 		    }
 		    void Task2::processError(std::string answer){
 		    	std::string code=answer.substr(2,2);
-		    	//std::cout<<answer<<std::endl;
 		        char* ca = new char[2];
 		        ca[0]=answer[2];ca[1]=answer[3];
 		        short opcode = bytesToShort(ca);
@@ -71,9 +70,8 @@
 		    }
 
 		    bool Task2::ParseMessage(std::string answer){
-		    	std::string code=answer.substr(0,2);
 		        char* ca = new char[2];
-		        ca[0]=answer[2];ca[1]=answer[3];
+		        ca[0]=answer[0];ca[1]=answer[1];
 		        short opcode = bytesToShort(ca);
 		        delete [] ca;
 		        bool toReturn =false;

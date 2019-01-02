@@ -73,7 +73,7 @@ bool ConnectionHandler::sendLine(std::string& line) {
  
 bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
     char ch;
-    int charCounter = 0, delimiterCounter =2,charCounterMax = 4;
+    int charCounter = 0, delimiterCounter =2;
     char* ca = new char[2];
     // Stop when we encounter the null character. 
     // Notice that the null character is not appended to the frame string.
@@ -94,7 +94,7 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
             }
             if(charCounter>2 && frame[charCounter]==delimiter&&bytesToShort(ca)<11)
                 delimiterCounter--;
-        }while (delimiterCounter > 0|| charCounterMax<4);
+        }while (delimiterCounter > 0|| charCounter<4);
     }catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;

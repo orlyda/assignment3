@@ -12,6 +12,7 @@ Task1(Task1 &&other);// Move Constructor
 Task1& operator=(const Task1 &other);// Copy Assignment
 Task1& operator=(Task1 && other);// Move Assignment
 void shortToBytes(short num, char* bytesArr);
+int numOfusers(std::string message);
 std::string ParseMessage(std::string message);
 std::string processRegister(std::string message);
 std::string processLogin(std::string message);
