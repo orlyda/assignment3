@@ -45,12 +45,11 @@
 		    	std::cout<<toPrint<<std::endl;
 		    }
 		    bool Task2::processACK(std::string answer){
-		    	string optional("");
 		        char* ca = new char[2];
+		        string optional="";
 		        ca[0]=answer[2];ca[1]=answer[3];
 		        short opcode = bytesToShort(ca);
-		        string s = answer.substr(4);
-		        optional+=s;
+		        optional += answer.substr(4);
 		        delete [] ca;
 		        string toPrint("ACK ");
 		        toPrint+= std::to_string(opcode);

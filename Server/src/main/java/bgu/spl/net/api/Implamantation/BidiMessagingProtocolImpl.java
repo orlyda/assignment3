@@ -137,7 +137,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     private void follow(String msg){
         String usernames="";//create the list of the succeeded following usernames
         boolean succsess=false;
-        if (!checkUserLoggedIn((short) 4)){ return; }
+        if (!checkUserLoggedIn((short) 4)){ return; }//check if the client is logged in
         String user=clients.getLoggedClients().get(connectionId);
         String s=msg.substring(3);
         System.out.println(msg);
@@ -145,7 +145,9 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         System.out.println(Arrays.toString(m));
         if(msg.charAt(0)=='0'){//the client want to follow the list of people
             for (String aM : m) {
-                if (!clients.getClientMap().get(user).getFollowing().contains(aM)) {//the following user isn't already in the following list
+                if (!clients.getClientMap().get(user).getFollowing().contains(aM)&&
+                        clients.getClientMap().containsKey(aM)) {
+                    //the following user isn't already in the following list,and registered
                     succsess = true;
                     clients.getClientMap().get(user).addFollowing(aM);//add the followed user to following list
                     clients.getClientMap().get(aM).addFollower(user);//add our client to the followers list at the followed client
@@ -155,7 +157,9 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         }
         else {//the client want to unfollow the list of people
             for (String aM : m) {
-                if (clients.getClientMap().get(user).getFollowing().contains(aM)) {//the user we want to remove exists in the following list
+                if (!clients.getClientMap().get(user).getFollowing().contains(aM)&&
+                        !clients.getClientMap().containsKey(aM)) {
+                    //the user we want to remove exists in the following list, and registered
                     succsess = true;
                     clients.getClientMap().get(user).removeFollowing(aM);//add the followed user to following list
                     clients.getClientMap().get(aM).removeFollower(user);//add our client to the followers list at the followed client
@@ -192,9 +196,11 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String[] names = msg.split("@");
             for (int i = 1; i < names.length; i++) {
                 names[i] = names[i].substring(0, names[i].indexOf(" "));
-                clients.getClientMap().get(names[i]).addMessage(username, msg);
-                String Message ;
-                sendNotification(toSend+username+'\0'+msg,names[i]);
+                if(clients.getClientMap().containsKey(names[i])) {
+                    clients.getClientMap().get(names[i]).addMessage(username, msg);
+                    String Message;
+                    sendNotification(toSend + username + '\0' + msg, names[i]);
+                }
             }
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)5));
@@ -222,7 +228,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     private void userlist(){
         if (checkUserLoggedIn((short) 7)) {
-            String usernames = new String(shortToBytes((short) 10))+ new String(shortToBytes((short)7));
+            String usernames = new String(shortToBytes((short) 10))+
+                    new String(shortToBytes((short)7))+new String(shortToBytes((short)clients.getClientMap().size()));
             for (String s : clients.getUsername()) usernames += s + String.valueOf('\0');
             connections.send(connectionId, usernames);
         }
