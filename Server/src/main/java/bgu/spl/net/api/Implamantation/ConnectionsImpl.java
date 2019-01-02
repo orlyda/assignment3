@@ -26,8 +26,9 @@ public class ConnectionsImpl<T> implements Connections<T> {
     }
 
     public boolean send(int connectionId, T msg){
-        if(!connectionHandlerMap.containsKey(connectionId))
+        if(!connectionHandlerMap.containsKey(connectionId)){
             return false;
+        }
         ConnectionHandler c = connectionHandlerMap.get(connectionId);
         c.send(msg);
         return true;

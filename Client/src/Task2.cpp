@@ -60,11 +60,12 @@
 		    }
 		    void Task2::processError(std::string answer){
 		    	std::string code=answer.substr(2,2);
+		    	//std::cout<<answer<<std::endl;
 		        char* ca = new char[2];
 		        ca[0]=answer[2];ca[1]=answer[3];
 		        short opcode = bytesToShort(ca);
 		        delete [] ca;
-		        std::string toPrint("Error ");
+		        std::string toPrint("ERROR ");
 		        toPrint+= std::to_string(opcode);
 		        std::cout<<toPrint<<std::endl;
 		    }

@@ -18,6 +18,7 @@ public class EncoderDecoderImpl implements MessageEncoderDecoder<String> {
     public String decodeNextByte(byte nextByte) {
         //notice that the top 128 ascii characters have the same representation as their utf-8 counterparts
         //this allow us to do the following comparison
+        pushByte(nextByte);
         if (nextByte=='\0')
             count++;
         if(len==2) {
@@ -34,7 +35,6 @@ public class EncoderDecoderImpl implements MessageEncoderDecoder<String> {
             else if(opcode == 4&delimiterCount==count)
                 return popString();
         }
-        pushByte(nextByte);
         return null; //not a line yet
     }
 

@@ -117,7 +117,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void logOut(){
-        System.out.println(999);
         if(!clients.getLoggedClients().isEmpty()) {
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)3));
