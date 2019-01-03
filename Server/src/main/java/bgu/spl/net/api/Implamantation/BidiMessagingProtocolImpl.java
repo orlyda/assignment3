@@ -184,7 +184,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if (!checkUserLoggedIn((short) 5)) {
             return;
         }
-        msg = msg.substring(1, msg.length() - 1);
+        msg = msg.substring(0, msg.length() - 1);
         String username = clients.getLoggedClients().get(connectionId);
         String toSend = new String(shortToBytes((short) 5));
         String FOLLOW = new String(shortToBytes((short) 1));
@@ -212,8 +212,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     private void pm(String msg){
         if (!checkUserLoggedIn((short) 6)) {
             String sender = clients.getLoggedClients().get(connectionId);
-            String receiver = msg.substring(1, msg.indexOf(String.valueOf('\0')));
-            msg = msg.substring(receiver.length() + 2, msg.length() - 1);//the message content
+            String receiver = msg.substring(0, msg.indexOf(String.valueOf('\0')));
+            msg = msg.substring(msg.indexOf(String.valueOf('\0')+1, msg.length() - 1));//the message content
             clients.getClientMap().get(receiver).addMessage(sender, msg);
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)6));
