@@ -27,8 +27,7 @@
 		    	return *this;
 		    }
 		    void Task2::processNotification(std::string answer){
-		    	std::string isPM=answer.substr(2,1);
-		    	int PM= atoi(isPM.c_str());
+		    int PM=(answer[2] & 0xff);
 		    	answer = answer.substr(3);
 		    	size_t first = answer.find_first_of("\0");
 		    	size_t last= answer.find_last_of("\0");
@@ -43,7 +42,7 @@
 		    	}
 		    	toPrint+=name+" "+content;
 		    	std::cout<<toPrint<<std::endl;
-		    }
+		    	}
 		    bool Task2::processACK(std::string answer){
 		        char* ca = new char[2];
 		        string optional="";
@@ -123,3 +122,7 @@
 		            this->shouldTerminate=ParseMessage(answer);
 		        }
 		    }
+
+
+		    /*		    	std::string isPM=answer.substr(2,1);
+              int PM= atoi(isPM.c_str());*/

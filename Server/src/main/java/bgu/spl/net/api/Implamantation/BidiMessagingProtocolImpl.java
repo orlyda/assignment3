@@ -187,7 +187,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         msg = msg.substring(0, msg.length() - 1);
         String username = clients.getLoggedClients().get(connectionId);
         String toSend = new String(shortToBytes((short) 9));
-        String FOLLOW = String.valueOf((byte)(1 & 0xFF));
+        char FOLLOW = (byte)(1 & 0xFF);
         toSend += FOLLOW;
         for (String s : clients.getClientMap().get(username).getFollowers()) {//post the msg to all the followers
             clients.getClientMap().get(s).addMessage(username, msg);//add the message to follower list;
@@ -210,21 +210,22 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         connections.send(connectionId, reply);
     }
 
-    private void pm(String msg){
+    private void pm(String msg) {
         if (!checkUserLoggedIn((short) 6)) {
-            String sender = clients.getLoggedClients().get(connectionId);
-            String receiver = msg.substring(0, msg.indexOf(String.valueOf('\0')));
-            msg = msg.substring(msg.indexOf(String.valueOf('\0')+1, msg.length() - 1));//the message content
-            clients.getClientMap().get(receiver).addMessage(sender, msg);
-            String reply = new String(shortToBytes((short) 10));
-            String opcode = new String(shortToBytes((short)6));
-            reply +=opcode;
-            connections.send(connectionId, reply);
-            String toSend = new String(shortToBytes((short) 5));
-            String FOLLOW = new String(shortToBytes((short)1));
-            toSend +=FOLLOW;
-            sendNotification(toSend+sender+String.valueOf('\0')+msg,receiver);
+            return;
         }
+        String sender = clients.getLoggedClients().get(connectionId);
+        String receiver = msg.substring(0, msg.indexOf(String.valueOf('\0')));
+        msg = msg.substring(msg.indexOf(String.valueOf('\0') + 1),msg.length()-1);//the message content
+        clients.getClientMap().get(receiver).addMessage(sender, msg);
+        String reply = new String(shortToBytes((short) 10));
+        String opcode = new String(shortToBytes((short) 6));
+        reply += opcode;
+        connections.send(connectionId, reply);
+        String toSend = new String(shortToBytes((short) 9));
+        char FOLLOW = '0';
+        toSend += FOLLOW;
+        sendNotification(toSend + sender + '\0' + msg+ '\0', receiver);
     }
 
     private void userlist(){
