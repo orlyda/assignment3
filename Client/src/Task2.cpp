@@ -70,7 +70,7 @@
 		        		if(i%2==1){
 		        			toPrint+=std::to_string(bytesToShort(num));
 		        		}
-		        		if(i<5)
+		        		if(i<5&&i%2==1)
 		        			toPrint+=" ";
 		        	}
 		        	delete [] num;

@@ -144,7 +144,7 @@
                 std::string line("");
                 line.push_back(ca[0]);line.push_back(ca[1]);
                 delete [] ca;
-                string name = message.substr(5);
+                string name = message.substr(4);
                 line+= name;
                 line.push_back('\0');
                 return line;

@@ -236,9 +236,9 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void stat(String msg){
-        if(checkUserLoggedIn((short) 8))
+        if(!checkUserLoggedIn((short) 8))
             return;
-        String username=msg.substring(1);
+        String username=msg.substring(0,msg.length()-1);
         if(!clients.getClientMap().containsKey(username)) {
             String reply = new String(shortToBytes((short) 11));
             String opcode = new String(shortToBytes((short)8));
@@ -248,10 +248,11 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         }
         String reply = new String(shortToBytes((short) 10));
         String opcode = new String(shortToBytes((short)8));
-        reply +=opcode;
-        connections.send(connectionId,reply+clients.getClientMap().get(username).getNumPosts()+
-                clients.getClientMap().get(username).getFollowers().size()+
-                clients.getClientMap().get(username).getFollowing().size());
+        String postsnum = new String(shortToBytes((short)clients.getClientMap().get(username).getNumPosts()));
+        String followersNum = new String(shortToBytes((short)clients.getClientMap().get(username).getFollowers().size()));
+        String followingNum = new String(shortToBytes((short)clients.getClientMap().get(username).getFollowing().size()));
+        reply +=opcode+postsnum+followersNum+followingNum;
+        connections.send(connectionId,reply);
     }
 
     private boolean checkUserLoggedIn(short opKey){
