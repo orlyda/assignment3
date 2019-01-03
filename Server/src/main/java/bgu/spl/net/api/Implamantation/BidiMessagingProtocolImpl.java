@@ -187,7 +187,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         msg = msg.substring(0, msg.length() - 1);
         String username = clients.getLoggedClients().get(connectionId);
         String toSend = new String(shortToBytes((short) 9));
-        String FOLLOW = new String(shortToBytes((short) 1));
+        String FOLLOW = String.valueOf((byte)(1 & 0xFF));
         toSend += FOLLOW;
         for (String s : clients.getClientMap().get(username).getFollowers()) {//post the msg to all the followers
             clients.getClientMap().get(s).addMessage(username, msg);//add the message to follower list;
@@ -197,9 +197,10 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         String[] names = msg.split("@");
         for (int i = 1; i < names.length; i++) {
             names[i] = names[i].substring(0, names[i].indexOf(" "));
-            if (clients.getClientMap().containsKey(names[i])) {
+            if (clients.getClientMap().containsKey(names[i])&&
+            !clients.getClientMap().get(username).getFollowers().contains(names[i])) {
+                //check the person we send the post to is registered and not in the followers list
                 clients.getClientMap().get(names[i]).addMessage(username, msg);
-                String Message;
                 sendNotification(toSend + username + '\0' + msg + '\0', names[i]);
             }
         }
