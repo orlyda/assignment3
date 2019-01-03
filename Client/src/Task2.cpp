@@ -49,11 +49,33 @@
 		        string optional="";
 		        ca[0]=answer[2];ca[1]=answer[3];
 		        short opcode = bytesToShort(ca);
-		        optional += answer.substr(4);
 		        delete [] ca;
 		        string toPrint("ACK ");
-		        toPrint+= std::to_string(opcode);
-		        toPrint+=" "+optional;
+		        toPrint+= std::to_string(opcode)+=" ";
+		        if(opcode==4||opcode==7){
+		        	char* numOfusers = new char[2];
+		        	numOfusers[0]=answer[4];numOfusers[1]=answer[5];
+		        	toPrint+=std::to_string(bytesToShort(numOfusers))+" ";
+		        	optional+= answer.substr(6);
+		        	for(unsigned int i = 0; i< optional.size();i++){
+		        		if(optional[i]=='\0')
+		        			optional[i]=" ";
+		        	}
+		        	delete [] numOfusers;
+		        }
+		        if(opcode==8){
+		        	char* num = new char[2]; 
+		        	for(unsigned int i= 0; i<6;i++){
+		        		num[i%2]=answer[i+4];
+		        		if(i%2==1){
+		        			toPrint+=std::to_string(bytesToShort(num));
+		        		}
+		        		if(i<5)
+		        			toPrint+=" ";
+		        	}
+		        	delete [] num;
+		        }
+		        toPrint+=optional;
 		        std::cout<<toPrint<<std::endl;
 		        return opcode==3;
 		    }

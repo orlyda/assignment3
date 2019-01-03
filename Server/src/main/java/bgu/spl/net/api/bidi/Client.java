@@ -15,7 +15,6 @@ public class Client {
     private LinkedList<String> waitingMessage;
 
     public Client(String user,String pass){
-        System.out.println(user);
         username=user;
         password=pass;
         numPosts=0;

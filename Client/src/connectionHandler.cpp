@@ -73,10 +73,11 @@ bool ConnectionHandler::sendLine(std::string& line) {
  
 bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
     char ch;
-    int charCounter = 0, delimiterCounter =2;
+    int charCounter = 0, delimiterCounter =2,charCounterMax = 4;
     char* ca = new char[2];
-    // Stop when we encounter the null character. 
-    // Notice that the null character is not appended to the frame string.
+    char* ack = new char[2];
+    char* num_of_Users = new char[2];
+    short ACKcode=0;
     try {
 		do{
 			getBytes(&ch, 1);
@@ -92,13 +93,29 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
                 else if(bytesToShort(ca)==11)
                     delimiterCounter=0;
             }
-            if(charCounter>2 && frame[charCounter]==delimiter&&bytesToShort(ca)<11)
+            if(charCounter==4&&bytesToShort(ca)==10){
+                ack[0] = frame[2];ack[1]=frame[3];
+                ACKcode = bytesToShort(ack);
+                if(ACKcode == 4||ACKcode==7)
+                    charCounterMax=7;
+                if(ACKcode==8)
+                    charCounterMax=10;
+            }
+            if(charCounter==5&& ACKcode ==4&&frame[charCounter-1]==delimiter)
+                delimiterCounter++;
+            if(charCounter==6&&ACKcode >=4&&ACKcode<=7){
+                num_of_Users[0]= frame[4];num_of_Users[1]=frame[5];
+                delimiterCounter = bytesToShort(num_of_Users);
+            }
+            if(charCounter>2 && frame[charCounter-1]==delimiter)
                 delimiterCounter--;
-        }while (delimiterCounter > 0|| charCounter<4);
+        }while (((delimiterCounter > 0)||(charCounter < charCounterMax)));
     }catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
     }
+    delete [] num_of_Users;
+    delete [] ack;
     delete [] ca;
     return true;
 }

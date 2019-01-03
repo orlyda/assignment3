@@ -136,22 +136,20 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
 
     private void follow(String msg){
         String usernames="";//create the list of the succeeded following usernames
-        boolean succsess=false;
         if (!checkUserLoggedIn((short) 4)){ return; }//check if the client is logged in
         String user=clients.getLoggedClients().get(connectionId);
         String s=msg.substring(3);
-        System.out.println(msg);
         String[]m=s.split(String.valueOf('\0'));
-        System.out.println(Arrays.toString(m));
+        short successful=0;
         if(msg.charAt(0)=='0'){//the client want to follow the list of people
             for (String aM : m) {
                 if (!clients.getClientMap().get(user).getFollowing().contains(aM)&&
                         clients.getClientMap().containsKey(aM)) {
                     //the following user isn't already in the following list,and registered
-                    succsess = true;
                     clients.getClientMap().get(user).addFollowing(aM);//add the followed user to following list
                     clients.getClientMap().get(aM).addFollower(user);//add our client to the followers list at the followed client
-                    usernames+="aM"+'\0';
+                    usernames+=aM+'\0';
+                    successful++;
                 }
             }
         }
@@ -160,14 +158,14 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
                 if (!clients.getClientMap().get(user).getFollowing().contains(aM)&&
                         !clients.getClientMap().containsKey(aM)) {
                     //the user we want to remove exists in the following list, and registered
-                    succsess = true;
                     clients.getClientMap().get(user).removeFollowing(aM);//add the followed user to following list
                     clients.getClientMap().get(aM).removeFollower(user);//add our client to the followers list at the followed client
-                    usernames+="aM"+'\0';
+                    usernames+=aM+'\0';
+                    successful++;
                 }
             }
         }
-        if(!succsess){// the FOLLOW command failed for all users on the list
+        if(successful==0){// the FOLLOW command failed for all users on the list
             String reply = new String(shortToBytes((short) 11));
             String opcode = new String(shortToBytes((short)4));
             reply +=opcode;
@@ -176,7 +174,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         else {//the FOLLOW command succeeded for at least one user
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short)4));
-            reply +=opcode;
+            String succ = new String(shortToBytes(successful));
+            reply +=opcode+succ+usernames;
             connections.send(connectionId, reply);
         }
     }
@@ -230,7 +229,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if (checkUserLoggedIn((short) 7)) {
             String usernames = new String(shortToBytes((short) 10))+
                     new String(shortToBytes((short)7))+new String(shortToBytes((short)clients.getClientMap().size()));
-            for (String s : clients.getUsername()) usernames += s + String.valueOf('\0');
+            for (String s : clients.getUsername()) usernames += s + '\0';
             connections.send(connectionId, usernames);
         }
     }
@@ -249,12 +248,9 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         String reply = new String(shortToBytes((short) 10));
         String opcode = new String(shortToBytes((short)8));
         reply +=opcode;
-        connections.send(connectionId, reply);
         connections.send(connectionId,reply+clients.getClientMap().get(username).getNumPosts()+
                 clients.getClientMap().get(username).getFollowers().size()+
                 clients.getClientMap().get(username).getFollowing().size());
-
-
     }
 
     private boolean checkUserLoggedIn(short opKey){
