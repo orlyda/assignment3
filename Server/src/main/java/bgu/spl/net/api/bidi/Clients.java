@@ -32,8 +32,8 @@ public class Clients {
     }
 
     public void logOutClient(int conId){
-        loggedClients.remove(conId);
         clientMap.get(getLoggedClients().get(conId)).setConnectionId(0);
+        loggedClients.remove(conId);
     }
 
     public Map<Integer, String> getLoggedClients() {
