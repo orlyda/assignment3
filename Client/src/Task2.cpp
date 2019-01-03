@@ -59,7 +59,7 @@
 		        	optional+= answer.substr(6);
 		        	for(unsigned int i = 0; i< optional.size();i++){
 		        		if(optional[i]=='\0')
-		        			optional[i]=" ";
+		        			optional[i]=' ';
 		        	}
 		        	delete [] numOfusers;
 		        }
