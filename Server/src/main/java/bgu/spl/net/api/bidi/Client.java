@@ -13,6 +13,8 @@ public class Client {
     private HashSet<String> followers;
     private Map<String,String> messages;
     private LinkedList<String> waitingMessage;
+    private int connectionId=0;
+
 
     public Client(String user,String pass){
         username=user;
@@ -64,4 +66,10 @@ public class Client {
         waitingMessage.addLast(msg);
     }
     public LinkedList getAwaitMessages(){return waitingMessage;}
+
+    public int getConnectionId(){return connectionId; }
+
+    public void setConnectionId(int conId){
+        connectionId=conId;
+    }
 }

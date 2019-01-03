@@ -186,13 +186,13 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         }
         msg = msg.substring(0, msg.length() - 1);
         String username = clients.getLoggedClients().get(connectionId);
-        String toSend = new String(shortToBytes((short) 5));
+        String toSend = new String(shortToBytes((short) 9));
         String FOLLOW = new String(shortToBytes((short) 1));
         toSend += FOLLOW;
         for (String s : clients.getClientMap().get(username).getFollowers()) {//post the msg to all the followers
             clients.getClientMap().get(s).addMessage(username, msg);//add the message to follower list;
             clients.getClientMap().get(username).addNumPosts();//increase the number of posts
-            sendNotification(toSend + username + '\0' + msg, s);
+            sendNotification(toSend + username + '\0' + msg + '\0', s);
         }
         String[] names = msg.split("@");
         for (int i = 1; i < names.length; i++) {
@@ -200,7 +200,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             if (clients.getClientMap().containsKey(names[i])) {
                 clients.getClientMap().get(names[i]).addMessage(username, msg);
                 String Message;
-                sendNotification(toSend + username + '\0' + msg, names[i]);
+                sendNotification(toSend + username + '\0' + msg + '\0', names[i]);
             }
         }
         String reply = new String(shortToBytes((short) 10));
@@ -265,7 +265,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
     private void sendNotification(String msg,String username){
         if (clients.getLoggedClients().containsValue(username)){
-            connections.send(connectionId,msg);
+            connections.send(clients.getClientMap().get(username).getConnectionId(),msg);
         }
         else {
             clients.getClientMap().get(username).addWAitMessage(msg);

@@ -28,10 +28,12 @@ public class Clients {
 
     public void logInClient(String name,int conId){
         loggedClients.put(conId,name);
+        clientMap.get(name).setConnectionId(conId);
     }
 
     public void logOutClient(int conId){
         loggedClients.remove(conId);
+        clientMap.get(getLoggedClients().get(conId)).setConnectionId(0);
     }
 
     public Map<Integer, String> getLoggedClients() {

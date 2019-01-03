@@ -30,8 +30,8 @@
 		    	std::string isPM=answer.substr(2,1);
 		    	int PM= atoi(isPM.c_str());
 		    	answer = answer.substr(3);
-		    	size_t first = answer.find_first_of("0");
-		    	size_t last= answer.find_last_of("0");
+		    	size_t first = answer.find_first_of("\0");
+		    	size_t last= answer.find_last_of("\0");
 		    	std::string name = answer.substr(0,first);
 		    	std::string content=answer.substr(first+1,last-first-2);
 		    	std::string toPrint("Notification ");
