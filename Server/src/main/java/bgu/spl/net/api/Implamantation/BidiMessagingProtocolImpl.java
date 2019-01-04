@@ -184,15 +184,14 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if (!checkUserLoggedIn((short) 5)) {
             return;
         }
-        msg = msg.substring(0, msg.length() - 1);
         String username = clients.getLoggedClients().get(connectionId);
         String toSend = new String(shortToBytes((short) 9));
-        char FOLLOW = (byte)(1 & 0xFF);
+        char FOLLOW = (byte)(1);
         toSend += FOLLOW;
         for (String s : clients.getClientMap().get(username).getFollowers()) {//post the msg to all the followers
             clients.getClientMap().get(s).addMessage(username, msg);//add the message to follower list;
             clients.getClientMap().get(username).addNumPosts();//increase the number of posts
-            sendNotification(toSend + username + '\0' + msg + '\0', s);
+            sendNotification(toSend + username + "\0" + msg, s);
         }
         String[] names = msg.split("@");
         for (int i = 1; i < names.length; i++) {
@@ -201,7 +200,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             !clients.getClientMap().get(username).getFollowers().contains(names[i])) {
                 //check the person we send the post to is registered and not in the followers list
                 clients.getClientMap().get(names[i]).addMessage(username, msg);
-                sendNotification(toSend + username + '\0' + msg + '\0', names[i]);
+                sendNotification(toSend + username + "\0" + msg, names[i]);
             }
         }
         String reply = new String(shortToBytes((short) 10));
