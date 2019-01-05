@@ -3,7 +3,6 @@
 #include <connectionHandler.h>
 #include <Task1.h>
 #include <Task2.h>
-
 int main (int argc, char *argv[]) {
     if (argc < 3) {
         std::cerr << "Usage: " << argv[0] << " host port" << std::endl << std::endl;
@@ -17,8 +16,10 @@ int main (int argc, char *argv[]) {
         std::cerr << "Cannot connect to " << host << ":" << port << std::endl;
         return 1;
     }
-	Task1 task1(&connectionHandler);
-    Task2 task2(&connectionHandler);
+    bool shouldTerminate =false;
+    bool logout = false;
+	Task1 task1(&connectionHandler,&logout,&shouldTerminate);
+    Task2 task2(&connectionHandler,&logout,&shouldTerminate);
     std::thread th1(&Task1::run, &task1);
     std::thread th2(&Task2::run, &task2);
     th1.join();

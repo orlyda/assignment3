@@ -6,7 +6,7 @@
 #include <connectionHandler.h>
 class Task1{
 public:
-Task1(ConnectionHandler *connectionHandler);// Constructor
+Task1(ConnectionHandler *connectionHandler, bool *logout,bool *shouldTerminate);// Constructor
 Task1(const Task1 &other);// Copy Constructor
 Task1(Task1 &&other);// Move Constructor
 Task1& operator=(const Task1 &other);// Copy Assignment
@@ -26,6 +26,7 @@ std::string processStat(std::string message);
  void run();
 private:
     ConnectionHandler *connectionHandler;
-    bool shouldTerminate;
+    bool *logout;
+    bool *shouldTerminate;
 };
 #endif
