@@ -27,13 +27,15 @@
 		    	return *this;
 		    }
 		    void Task2::processNotification(std::string answer){
-		    int PM=(answer[2] & 0xff);
+		    int PM=(answer[2] & 0xFF);
+		    //std::string isPM=answer.substr(2,1);
+            //int PM= atoi(isPM.c_str());
 		    	answer = answer.substr(3);
-		    	size_t first = answer.find_first_of("\0");
-		    	size_t last= answer.find_last_of("\0");
+		    	int first = answer.find('\0');
+		    	//int last= answer.find_last_of("\0");
 		    	std::string name = answer.substr(0,first);
-		    	std::string content=answer.substr(first+1,last-first-2);
-		    	std::string toPrint("Notification ");
+		    	std::string content=answer.substr(first+1,answer.length()-first-2);
+		    	std::string toPrint("NOTIFICATION ");
 		    	switch(PM){
 		    		case 0:{toPrint+="PM ";
 		    		break;}
