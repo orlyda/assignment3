@@ -214,17 +214,25 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             return;
         }
         String sender = clients.getLoggedClients().get(connectionId);
-        String receiver = msg.substring(0, msg.indexOf(String.valueOf('\0')));
-        msg = msg.substring(msg.indexOf(String.valueOf('\0') + 1),msg.length()-1);//the message content
-        clients.getClientMap().get(receiver).addMessage(sender, msg);
-        String reply = new String(shortToBytes((short) 10));
-        String opcode = new String(shortToBytes((short) 6));
-        reply += opcode;
-        connections.send(connectionId, reply);
-        String toSend = new String(shortToBytes((short) 9));
-        char FOLLOW = '0';
-        toSend += FOLLOW;
-        sendNotification(toSend + sender + '\0' + msg+ '\0', receiver);
+        String receiver = msg.substring(2, msg.indexOf(String.valueOf('\0')));
+        msg = msg.substring(msg.indexOf(String.valueOf('\0')) + 1);//the message content
+        if(clients.getClientMap().containsKey(receiver)) {
+            clients.getClientMap().get(receiver).addMessage(sender, msg);
+            String reply = new String(shortToBytes((short) 10));
+            String opcode = new String(shortToBytes((short) 6));
+            reply += opcode;
+            connections.send(connectionId, reply);
+            String toSend = new String(shortToBytes((short) 9));
+            char FOLLOW = (byte) (0);
+            toSend += FOLLOW;
+            sendNotification(toSend + sender + '\0' + msg, receiver);
+        }
+        else {
+            String reply = new String(shortToBytes((short) 11));
+            String opcode = new String(shortToBytes((short) 6));
+            reply += opcode;
+            connections.send(connectionId, reply);
+        }
     }
 
     private void userlist(){
