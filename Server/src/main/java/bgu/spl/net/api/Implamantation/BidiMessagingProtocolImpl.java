@@ -213,10 +213,11 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         if (!checkUserLoggedIn((short) 6)) {
             return;
         }
+        System.out.println(msg);
         String sender = clients.getLoggedClients().get(connectionId);
-        String receiver = msg.substring(2, msg.indexOf(String.valueOf('\0')));
+        String receiver = msg.substring(0, msg.indexOf(String.valueOf('\0')));
         msg = msg.substring(msg.indexOf(String.valueOf('\0')) + 1);//the message content
-        if(clients.getClientMap().containsKey(receiver)) {
+        if(clients.getClientMap().containsKey(receiver)) {//check the receiver is registered
             clients.getClientMap().get(receiver).addMessage(sender, msg);
             String reply = new String(shortToBytes((short) 10));
             String opcode = new String(shortToBytes((short) 6));
@@ -225,6 +226,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             String toSend = new String(shortToBytes((short) 9));
             char FOLLOW = (byte) (0);
             toSend += FOLLOW;
+            System.out.println(toSend+" "+sender+" "+msg);
             sendNotification(toSend + sender + '\0' + msg, receiver);
         }
         else {

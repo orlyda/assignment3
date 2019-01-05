@@ -122,10 +122,11 @@
                 std::string line("");
                 line.push_back(ca[0]);line.push_back(ca[1]);
                 delete [] ca;
+                message=message.substr(3);
                 int space  = message.find(" ");
-                string name = message.substr(3,space);
-                string content = message.substr(space+);
-                line+= name+ '\0'+content+'\0';
+                string name = message.substr(0,space);
+                string content = message.substr(space+1);
+                line+= name+ "\0"+content+"\0";
                 return line;
             }
 
