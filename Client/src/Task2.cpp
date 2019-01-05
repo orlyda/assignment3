@@ -34,7 +34,7 @@ Task2& Task2::operator=(Task2 &&other){//Move Assignmemt
 	return *this;
 }
 void Task2::processNotification(std::string answer){
-int PM=(answer[2] & 0xFF);
+    int PM=(answer[2] & 0xFF);
 	answer = answer.substr(3);
 	int first = answer.find('\0');
 	std::string name = answer.substr(0,first);

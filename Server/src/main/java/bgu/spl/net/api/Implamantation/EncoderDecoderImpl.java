@@ -28,6 +28,8 @@ public class EncoderDecoderImpl implements MessageEncoderDecoder<String> {
             if(opcode==3||opcode==7)
                 return popString();
         }
+        if(len==3&&opcode==4&&nextByte=='\0')
+            count--;
         if(len>2){
             if((opcode==8||opcode==5)&&nextByte=='\0')
                 return popString();

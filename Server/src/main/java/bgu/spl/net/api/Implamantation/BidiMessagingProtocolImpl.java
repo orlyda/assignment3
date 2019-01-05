@@ -135,6 +135,8 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void follow(String msg){
+        System.out.println(msg);
+        System.out.println(msg.length());
         String usernames="";//create the list of the succeeded following usernames
         if (!checkUserLoggedIn((short) 4)){ return; }//check if the client is logged in
         String user=clients.getLoggedClients().get(connectionId);
@@ -190,7 +192,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         }
         String username = clients.getLoggedClients().get(connectionId);
         String toSend = new String(shortToBytes((short) 9));
-        char FOLLOW = (byte)(1);
+        char FOLLOW = (byte)(1&0xFF);
         toSend += FOLLOW;
         for (String s : clients.getClientMap().get(username).getFollowers()) {//post the msg to all the followers
             clients.getClientMap().get(s).addMessage(username, msg);//add the message to follower list;

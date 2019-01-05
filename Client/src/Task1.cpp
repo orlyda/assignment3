@@ -88,8 +88,8 @@ std::string Task1::processFollow(std::string message){
     std::string line("");
     line.push_back(ca[0]);line.push_back(ca[1]);
     delete [] ca;
-    if(message.find('0')==7) line.push_back('0');
-    else line.push_back('1');
+    if(message[7]=='0') line.push_back('\0');
+    else line.push_back((1&0xFF));
     message = message.substr(9);
     size_t space = message.find(" ");
     std::string numOfusers = message.substr(0,space);

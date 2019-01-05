@@ -107,6 +107,8 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
                 num_of_Users[0]= frame[4];num_of_Users[1]=frame[5];
                 delimiterCounter = bytesToShort(num_of_Users);
             }
+            if(charCounter==3 && bytesToShort(ca)==9&&ch=='\0')
+                delimiterCounter++;
             if(charCounter>2 && frame[charCounter-1]==delimiter)
                 delimiterCounter--;
         }while (((delimiterCounter > 0)||(charCounter < charCounterMax)));
