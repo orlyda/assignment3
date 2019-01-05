@@ -238,6 +238,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void stat(String msg){
+        System.out.println(msg);
         if(!checkUserLoggedIn((short) 8))
             return;
         String username=msg.substring(0,msg.length()-1);
@@ -258,7 +259,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private boolean checkUserLoggedIn(short opKey){
-        if (!clients.getLoggedClients().containsKey(connectionId)) {//the client is not logged in
+        if (!(clients.getLoggedClients().containsKey(connectionId))) {//the client is not logged in
             String reply = new String(shortToBytes((short) 11));
             connections.send(connectionId, reply+new String(shortToBytes((opKey))));
             return false;
