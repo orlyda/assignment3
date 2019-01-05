@@ -247,11 +247,10 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
     }
 
     private void stat(String msg){
-        System.out.println(msg);
         if(!checkUserLoggedIn((short) 8))
             return;
         String username=msg.substring(0,msg.length()-1);
-        if(!clients.getClientMap().containsKey(username)) {
+        if(!clients.getClientMap().containsKey(username)){
             String reply = new String(shortToBytes((short) 11));
             String opcode = new String(shortToBytes((short)8));
             reply +=opcode;

@@ -1,5 +1,6 @@
 package bgu.spl.net.srv;
 
+import bgu.spl.net.api.Implamantation.ConnectionsImpl;
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 
@@ -26,11 +27,13 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
             MessageEncoderDecoder<T> reader,
             BidiMessagingProtocol<T> protocol,
             SocketChannel chan,
-            Reactor reactor) {
+            Reactor reactor, ConnectionsImpl connections) {
         this.chan = chan;
         this.encdec = reader;
         this.protocol = protocol;
         this.reactor = reactor;
+        int id = connections.addConnection(this);
+        protocol.start(id,connections);
     }
 
     public Runnable continueRead() {
@@ -47,14 +50,12 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
             buf.flip();
             return () -> {
                 try {
-                    while (buf.hasRemaining()) {
-                        T nextMessage = encdec.decodeNextByte(buf.get());
-                        if (nextMessage != null) {
-                            protocol.process(nextMessage);
-                            /*if (response != null) {
-                                writeQueue.add(ByteBuffer.wrap(encdec.encode(response)));
-                                reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-                            }*/
+                    synchronized (this) {
+                        while (buf.hasRemaining()) {
+                            T nextMessage = encdec.decodeNextByte(buf.get());
+                            if (nextMessage != null) {
+                                protocol.process(nextMessage);
+                            }
                         }
                     }
                 } finally {
@@ -103,7 +104,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         }
     }
 
-    private static ByteBuffer leaseBuffer() {
+    private synchronized static ByteBuffer leaseBuffer() {
         ByteBuffer buff = BUFFER_POOL.poll();
         if (buff == null) {
             return ByteBuffer.allocateDirect(BUFFER_ALLOCATION_SIZE);
@@ -117,11 +118,8 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         BUFFER_POOL.add(buff);
     }
 
-    public BidiMessagingProtocol<T> getProtocol() {
-        return protocol;
-    }
     @Override
-    public void send(T msg) {
+    public synchronized void send(T msg) {
         writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
         reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
