@@ -126,7 +126,10 @@
                 int space  = message.find(" ");
                 string name = message.substr(0,space);
                 string content = message.substr(space+1);
-                line+= name+ "\0"+content+"\0";
+                line+= name;
+                line.push_back('\0');
+                line+=content;
+                line.push_back('\0');
                 return line;
             }
 

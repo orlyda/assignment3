@@ -200,6 +200,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             !clients.getClientMap().get(username).getFollowers().contains(names[i])) {
                 //check the person we send the post to is registered and not in the followers list
                 clients.getClientMap().get(names[i]).addMessage(username, msg);
+                System.out.println(toSend+" "+username+"\0"+msg);
                 sendNotification(toSend + username + "\0" + msg, names[i]);
             }
         }
@@ -216,7 +217,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
         System.out.println(msg);
         String sender = clients.getLoggedClients().get(connectionId);
         String receiver = msg.substring(0, msg.indexOf(String.valueOf('\0')));
-        msg = msg.substring(msg.indexOf(String.valueOf('\0')) + 1);//the message content
+        msg = msg.substring(msg.indexOf(String.valueOf('\0')));//the message content
         if(clients.getClientMap().containsKey(receiver)) {//check the receiver is registered
             clients.getClientMap().get(receiver).addMessage(sender, msg);
             String reply = new String(shortToBytes((short) 10));
@@ -227,7 +228,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             char FOLLOW = (byte) (0);
             toSend += FOLLOW;
             System.out.println(toSend+" "+sender+" "+msg);
-            sendNotification(toSend + sender + '\0' + msg, receiver);
+            sendNotification(toSend + sender + msg, receiver);
         }
         else {
             String reply = new String(shortToBytes((short) 11));
