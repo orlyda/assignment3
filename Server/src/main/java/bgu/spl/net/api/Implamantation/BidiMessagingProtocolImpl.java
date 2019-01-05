@@ -204,7 +204,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             !clients.getClientMap().get(username).getFollowers().contains(names[i])) {
                 //check the person we send the post to is registered and not in the followers list
                 clients.getClientMap().get(names[i]).addMessage(username, msg);
-                System.out.println(toSend+" "+username+"\0"+msg);
                 sendNotification(toSend + username + "\0" + msg, names[i]);
             }
         }
@@ -229,7 +228,7 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<Strin
             reply += opcode;
             connections.send(connectionId, reply);
             String toSend = new String(shortToBytes((short) 9));
-            char PM = '\0';
+            char PM = (byte)(0);
             toSend += PM;
             System.out.println(toSend+" "+sender+" "+msg);
             sendNotification(toSend + sender + msg, receiver);

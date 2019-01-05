@@ -117,8 +117,7 @@ std::string Task1::processPost(std::string message){
     line.push_back('\0');
     return line;
 }
-
-            std::string Task1::processPM(std::string message){
+ std::string Task1::processPM(std::string message){
                 char* ca = new char[2];
                 shortToBytes(6,ca);
                 std::string line("");
@@ -133,7 +132,7 @@ std::string Task1::processPost(std::string message){
                 line+=content;
                 line.push_back('\0');
                 return line;
-            }
+ }
 
             std::string Task1::processUserlist(std::string message){
                 char* ca = new char[2];
